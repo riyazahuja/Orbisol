@@ -39,7 +39,7 @@ phi = 0
 
 def update_scene():
     ts = Satellite.get_timescale()
-    now = ts.time()
+    now = ts.now()
     for _, satellite in Scene:
         pos = satellite.get_pos(now)
         Scene.update(pos, satellite)
