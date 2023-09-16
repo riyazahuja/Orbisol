@@ -39,7 +39,7 @@ def main():
   # Get the json data containing celestial objects orbiting earth in TLE format.
   
   
-  current_directory = os.getcwd()
+
   final_path = 'src/datasets/final.json'
   with open(final_path, 'r') as f:
     celestial_data = json.load(f)
@@ -53,6 +53,7 @@ def main():
     TLE = (line1, line2)
     satellite = Satellite(name, TLE)
     satellites.append(satellite)
+
 
   bounds = ((-100,100),(-100,100),(-100,100))
   scene = Octree(bounds)
@@ -78,4 +79,4 @@ def main():
   
 main()
 
-print(Scene)
+#print(Scene)
