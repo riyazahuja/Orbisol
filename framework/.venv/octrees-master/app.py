@@ -39,7 +39,19 @@ phi = 0
 #points = [(0, 2, 1), (1, 0, 2), (1, 0, 0), (2, 0, 0), (2, 0, 0)]
 #octree = Octree(((-100, 100), (-100, 100), (-100, 100)))
 
+def increment_speed():
+    delta_time_scale = Satellite.delta_time_scale
+    if Satellite.time_scale < 0.00005:
+        Satellite.time_scale += delta_time_scale
+
+def decrement_speed():
+    delta_time_scale = Satellite.delta_time_scale
+    if Satellite.time_scale > -0.00005:
+        Satellite.time_scale -= delta_time_scale
+
+
 def update_scene():
+    global NumScenes
     NumScenes += 1
     ts = Satellite.get_timescale()
     now = ts.now()
@@ -102,6 +114,11 @@ def main():
                 theta += dx * 0.005
                 phi += dy * 0.005
                 x_drag_origin, y_drag_origin = x, y
+            keys = pygame.key.get_pressed()
+            if K_UP in keys:
+                increment_speed()
+            elif K_DOWN in keys:
+                decrement_speed()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glPushMatrix()
         glTranslatef(0.0, 0.0, zoom_factor)  # Apply zoom factor here
