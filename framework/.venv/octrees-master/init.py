@@ -40,7 +40,7 @@ def main():
   
   
 
-  final_path = 'src/datasets/final.json'
+  final_path = 'src/datasets/final_half.json'
   with open(final_path, 'r') as f:
     celestial_data = json.load(f)
 
