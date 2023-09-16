@@ -39,6 +39,18 @@ phi = 0
 #points = [(0, 2, 1), (1, 0, 2), (1, 0, 0), (2, 0, 0), (2, 0, 0)]
 #octree = Octree(((-100, 100), (-100, 100), (-100, 100)))
 
+def update_scene():
+    ts = Satellite.get_timescale()
+    now = ts.now()
+    
+    for prev_pos, satellite in Scene:
+        new_pos = satellite.get_pos(now)
+        try:
+            Scene.remove(prev_pos)
+        except:
+            pass
+        Scene.update(new_pos, satellite)
+
 def draw_sphere():
     glutSolidSphere(1, 50, 50)
 
@@ -96,6 +108,7 @@ def main():
         draw_sphere()
         draw_clickable_points()
         glPopMatrix()
+        update_scene()
         pygame.display.flip()
         pygame.time.wait(10)
 
