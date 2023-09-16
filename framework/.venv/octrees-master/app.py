@@ -48,12 +48,12 @@ phi = 0
 
 def increment_speed():
     delta_time_scale = Satellite.delta_time_scale
-    if Satellite.time_scale < 0.00005:
+    if Satellite.time_scale < 0.0005:
         Satellite.time_scale += delta_time_scale
 
 def decrement_speed():
     delta_time_scale = Satellite.delta_time_scale
-    if Satellite.time_scale > -0.00005:
+    if Satellite.time_scale > -0.0005:
         Satellite.time_scale -= delta_time_scale
 
 
