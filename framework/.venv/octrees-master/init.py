@@ -9,6 +9,7 @@ class Satellite:
   # TODO: figure out what timescale is for.
   ts = load.timescale()
   pos_scale = 1000
+  time_scale = 10
 
   @staticmethod
   def get_timescale():

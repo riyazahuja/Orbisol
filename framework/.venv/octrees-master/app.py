@@ -15,7 +15,7 @@ zoom_factor=-5
 from octrees import *
 
 Scene = getScene()
-
+NumScenes = 1
 
 if Scene is None:
     raise Exception('Scene not initialized')
@@ -39,16 +39,14 @@ phi = 0
 #points = [(0, 2, 1), (1, 0, 2), (1, 0, 0), (2, 0, 0), (2, 0, 0)]
 #octree = Octree(((-100, 100), (-100, 100), (-100, 100)))
 
-def get_time(t):
-    print(t)
-
 def update_scene():
+    NumScenes += 1
     ts = Satellite.get_timescale()
     now = ts.now()
-    get_time(now)
+    t_scaled = now + NumScenes * Satellite.time_scale
     
     for prev_pos, satellite in Scene:
-        new_pos = satellite.get_pos(now)
+        new_pos = satellite.get_pos(t_scaled)
         try:
             Scene.remove(prev_pos)
         except:
