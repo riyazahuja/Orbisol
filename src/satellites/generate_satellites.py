@@ -12,7 +12,6 @@ class Satellite:
 
   def __init__(self, name, TLE, path):
     self.name = name
-    self.type = type
     self.TLE = TLE
     self.path = path
 
