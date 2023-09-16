@@ -39,8 +39,6 @@ def main():
   # Get the json data containing celestial objects orbiting earth in TLE format.
   
   
-  current_directory = os.getcwd()
-  print(f"The current working directory is: {current_directory}")
   final_path = 'src/datasets/final.json'
   with open(final_path, 'r') as f:
     celestial_data = json.load(f)
