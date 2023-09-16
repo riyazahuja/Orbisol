@@ -20,6 +20,8 @@ from octrees import *
 zoom_factor=-5
 fov = math.pi
 Scene = getScene()
+info_panel = False
+clicked_sat = None
 
 NumScenes = 1
 
@@ -29,7 +31,7 @@ if Scene is None:
 
 # Initialize Pygame and OpenGL
 pygame.init()
-display = (800, 600)
+display = (1500, 900)
 pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
 gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
 glTranslatef(0.0, 0.0, -5)
@@ -142,16 +144,24 @@ def check_in_bounds(phi, theta, z):
 
 
 def draw_clickable_points(phi,theta,z):
-
+    
     #points = octree.subset(f_n)
     glDisable(GL_LIGHTING)
-    glColor3f(0, 1, 0)  # Green color
-    glPointSize(2.0)
+   
+    glPointSize(3.0)
     glBegin(GL_POINTS)
 
     for point,sat in Scene:
         if check_in_bounds(phi,theta,z)(point):
-            glVertex3fv(point)
+            if sat.type == 'active':
+                glColor3f(0, 1, 0)  # Green color
+                glVertex3fv(point)
+            elif sat.type == 'inactive':
+                glColor3f(1, 0, 0)  # Red color
+                glVertex3fv(point)
+            else:
+                glColor3f(1, 0, 1)  # Green color
+                glVertex3fv(point)
     glEnd()
     glEnable(GL_LIGHTING)
 
@@ -159,6 +169,7 @@ def draw_clickable_points(phi,theta,z):
     
 
 def point_clicked(x, y):
+    global info_panel, clicked_sat
     modelview = glGetDoublev(GL_MODELVIEW_MATRIX)
     projection = glGetDoublev(GL_PROJECTION_MATRIX)
     viewport = glGetIntegerv(GL_VIEWPORT)
@@ -167,8 +178,115 @@ def point_clicked(x, y):
     
     for point, sat in Scene:
         winX, winY, winZ = gluProject(point[0], point[1], point[2], modelview, projection, viewport)
-        if abs(winX - x) < 5 and abs(winY - y) < 5:
+        if abs(winX - x) <30 and abs(winY - y) < 30:
             print(f"Point clicked: {point} | Sat: {sat.name}")
+            info_panel = True
+            clicked_sat = sat
+            print('Yahoo')
+
+def draw_text(x, y, text, font, color=(255, 255, 255)):
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    text_surface = font.render(text, True, color)
+    text_data = pygame.image.tostring(text_surface, "RGBA", True)
+    glWindowPos2d(x, y)
+    glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
+    glDisable(GL_BLEND)
+
+
+def get_orbital_data(sat):
+    # Initialize the satellite object
+    sat = sat.satellite#EarthSatellite(sat.TLE[0], sat.TLE[1], sat.name, Satellite.get_timescale())
+
+    # Fetch the orbital parameters
+    model = sat.model  # This holds the SGP4 model data
+    i = model.inclo
+    raan = model.nodeo  # Right Ascension of Ascending Node
+    e = model.ecco
+    argp = model.argpo  # Argument of Perigee
+    M = model.mo  # Mean Anomaly
+    n = model.no_kozai  # Mean Motion
+
+    # Convert radians to degrees for easier interpretation
+    i_deg = np.degrees(i)
+    raan_deg = np.degrees(raan)
+    argp_deg = np.degrees(argp)
+    M_deg = np.degrees(M)
+
+    # Create a dictionary to store the data
+    orbital_data = {
+        'Inclination (deg)': i_deg,
+        'RAAN (deg)': raan_deg,
+        'Eccentricity': e,
+        'Argument of Perigee (deg)': argp_deg,
+        'Mean Anomaly (deg)': M_deg,
+        'Mean Motion (rev/day)': n * 60 / (2 * np.pi),  # convert to rev/day
+    }
+    
+    return orbital_data
+
+def draw_info_panel():
+    if not info_panel or clicked_sat is None:
+        return
+
+    data = get_orbital_data(clicked_sat)
+
+
+    # Save current matrices
+    glMatrixMode(GL_PROJECTION)
+    glPushMatrix()
+    glLoadIdentity()
+    glMatrixMode(GL_MODELVIEW)
+    glPushMatrix()
+    glLoadIdentity()
+
+    # Disable 3D-specific settings
+    glDisable(GL_LIGHTING)
+    glDisable(GL_TEXTURE_2D)
+    glDisable(GL_DEPTH_TEST)
+
+    # Switch to 2D
+    glMatrixMode(GL_PROJECTION)
+    gluOrtho2D(0, display[0], 0, display[1])
+
+    # Draw the rectangle (make it white)
+    glColor3f(0, 0, 0)  # White
+    glBegin(GL_QUADS)
+    glVertex2f(0,0)
+    glVertex2f(1500, 0)
+    glVertex2f(1500, 200)
+    glVertex2f(0, 200)
+    glEnd()
+
+    # Draw the text (make it black)
+    font = pygame.font.Font(None, 36)
+    font2 = pygame.font.Font(None, 24)
+    
+    draw_text(60, 150, f"Satellite: {clicked_sat.name}", font, color=(255, 255, 255))
+    curr = 120
+    x=60
+    for k,v in data.items():
+        draw_text(x, curr, f"{k}: {v}", font2, color=(255, 255, 255))
+        curr=curr-20
+        if curr<75:
+            curr = 120
+            x += 500
+    
+    draw_text(1100,120,f"Status: {clicked_sat.type}" ,font2, color = (255,255,255))
+
+    draw_text(1100,80,f"Time Scale: {Satellite.time_scale}" ,font2, color = (255,255,255))
+
+    # Restore previous settings and matrices
+    glEnable(GL_DEPTH_TEST)
+    glEnable(GL_TEXTURE_2D)
+    glEnable(GL_LIGHTING)
+
+    glMatrixMode(GL_PROJECTION)
+    glPopMatrix()
+    glMatrixMode(GL_MODELVIEW)
+    glPopMatrix()
+
+
 
 
 def main():
@@ -214,6 +332,16 @@ def main():
 
         glPopMatrix()
         update_scene()
+
+        glDisable(GL_LIGHTING)
+        glDisable(GL_TEXTURE_2D)
+
+        # Draw panel here
+        draw_info_panel()
+        glEnable(GL_LIGHTING)
+        glEnable(GL_TEXTURE_2D)
+
+        
         pygame.display.flip()
         pygame.time.wait(10)
 

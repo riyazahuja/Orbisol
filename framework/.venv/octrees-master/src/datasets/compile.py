@@ -20,10 +20,21 @@ def generateDict(files):
             if name in cnts.keys() and cnts[name] > 0:
                 name += f'({cnts[name]})'
             r = random.randint(0,2)
+            s = random.randint(0,3)
+            if (s == 1):
+                t = 'inactive'
+            else:
+                t='active'
+            
+
             if r == 0:
+                
+                
+
                 result[name] = {
                     'line1' : lines[i+1],
-                    'line2' : lines[i+2]
+                    'line2' : lines[i+2],
+                    'type' : t
                 }
             i+=3
         
