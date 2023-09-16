@@ -89,7 +89,8 @@ def draw_clickable_points(phi,theta,zoom_factor):
     glColor3f(0, 1, 0)  # Green color
     glPointSize(10.0)
     glBegin(GL_POINTS)
-    for point,sat in Scene.subset(check_in_bounds(phi,theta,zoom_factor)):
+    checker = check_in_bounds(phi, theta, zoom_factor)
+    for point,sat in Scene.subset(point_fn=checker):
         glVertex3fv(point)
     glEnd()
     glEnable(GL_LIGHTING)
