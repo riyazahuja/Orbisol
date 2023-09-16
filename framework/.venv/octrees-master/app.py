@@ -80,7 +80,7 @@ def draw_clickable_points(phi,theta,zoom_factor):
     glColor3f(0, 1, 0)  # Green color
     glPointSize(10.0)
     glBegin(GL_POINTS)
-    for point,sat in Scene:#Scene.subset(check_in_frame(phi,theta,zoom_factor)):
+    for point,sat in Scene.subset(check_in_bounds(phi,theta,zoom_factor)):
         glVertex3fv(point)
     glEnd()
     glEnable(GL_LIGHTING)
@@ -115,10 +115,10 @@ def main():
                 point_clicked(*event.pos)  # Check for point clicks
 
                 if event.button == 4:  # Scroll up
-                    zoom_factor += 0.5  # Increase the zoom factor
+                    if zoom_factor <= 0:
+                        zoom_factor += 0.5  # Increase the zoom factor
                 elif event.button == 5:  # Scroll down
-                    if not (zoom_factor < -5):
-                        zoom_factor -= 0.5  # Decrease the zoom factor
+                    zoom_factor -= 0.5  # Decrease the zoom factor
 
             if event.type == pygame.MOUSEBUTTONUP:
                 dragging = False
