@@ -43,16 +43,21 @@ def draw_sphere():
     glutSolidSphere(1, 50, 50)
 
 
-def draw_clickable_points():
+def draw_clickable_points(phi,theta,zoom_factor):
     #points = octree.subset(f_n)
     glDisable(GL_LIGHTING)
     glColor3f(0, 1, 0)  # Green color
     glPointSize(10.0)
     glBegin(GL_POINTS)
-    for point,sat in Scene:
+    for point,sat in Scene.subset(check_in_frame(phi,theta,zoom_factor)):
         glVertex3fv(point)
     glEnd()
     glEnable(GL_LIGHTING)
+
+
+
+
+
 def point_clicked(x, y):
     for point,sat in Scene:
         px, py, pz = point
@@ -77,7 +82,8 @@ def main():
                 if event.button == 4:  # Scroll up
                     zoom_factor += 0.5  # Increase the zoom factor
                 elif event.button == 5:  # Scroll down
-                    zoom_factor -= 0.5  # Decrease the zoom factor
+                    if not (zoom_factor < -5):
+                        zoom_factor -= 0.5  # Decrease the zoom factor
 
             if event.type == pygame.MOUSEBUTTONUP:
                 dragging = False
@@ -94,7 +100,7 @@ def main():
         glRotatef(math.degrees(theta), 0, 1, 0)
         glRotatef(math.degrees(phi), 1, 0, 0)
         draw_sphere()
-        draw_clickable_points()
+        draw_clickable_points(theta,phi,zoom_factor)
         glPopMatrix()
         pygame.display.flip()
         pygame.time.wait(10)

@@ -66,7 +66,7 @@ def main():
   #   path = lambda t: earth_satellite.at(t).position.km
   #   satellite = Satellite(name, TLE, path)
   #   satellites.append(satellite)
-  print(satellites)
+  #print(satellites)
 
   bounds = ((-100,100),(-100,100),(-100,100))
   scene = Octree(bounds)
@@ -93,4 +93,4 @@ def main():
   
 main()
 
-print(Scene)
+#print(Scene)
