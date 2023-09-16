@@ -21,6 +21,9 @@ zoom_factor=-5
 fov = math.pi
 Scene = getScene()
 
+NumScenes = 1
+
+
 if Scene is None:
     raise Exception('Scene not initialized')
 
@@ -43,14 +46,26 @@ phi = 0
 #points = [(0, 2, 1), (1, 0, 2), (1, 0, 0), (2, 0, 0), (2, 0, 0)]
 #octree = Octree(((-100, 100), (-100, 100), (-100, 100)))
 
+def increment_speed():
+    delta_time_scale = Satellite.delta_time_scale
+    if Satellite.time_scale < 0.00005:
+        Satellite.time_scale += delta_time_scale
+
+def decrement_speed():
+    delta_time_scale = Satellite.delta_time_scale
+    if Satellite.time_scale > -0.00005:
+        Satellite.time_scale -= delta_time_scale
+
 
 def update_scene():
+    global NumScenes
+    NumScenes += 1
     ts = Satellite.get_timescale()
     now = ts.now()
+    t_scaled = now + NumScenes * Satellite.time_scale
     
     for prev_pos, satellite in Scene:
-        new_pos = satellite.get_pos(now)
-        new_pos = (new_pos[0] / 1000, new_pos[1] / 1000, new_pos[2] / 1000)
+        new_pos = satellite.get_pos(t_scaled)
         try:
             Scene.remove(prev_pos)
         except:
@@ -183,6 +198,11 @@ def main():
                 theta += dx * 0.03#0.005
                 phi += dy * 0.03#0.005
                 x_drag_origin, y_drag_origin = x, y
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    increment_speed()
+                elif event.key == pygame.K_DOWN:
+                    decrement_speed()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glPushMatrix()
         glTranslatef(0.0, 0.0, zoom_factor)  # Apply zoom factor here
