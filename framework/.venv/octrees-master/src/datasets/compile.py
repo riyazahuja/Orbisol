@@ -19,16 +19,23 @@ def generateDict(files):
                 cnts[name] = 0
             if name in cnts.keys() and cnts[name] > 0:
                 name += f'({cnts[name]})'
-            r = random.randint(0,2)
-            s = random.randint(0,3)
-            if (s == 1):
-                t = 'inactive'
-            else:
-                t='active'
+            r = random.randint(0,1)
+            #s = random.randint(0,3)
+            #if (s == 1):
+            #    t = 'inactive'
+            #else:
+            #    t='active'
             
 
             if r == 0:
-                
+                if (file == 'active' or file == 'station' or file == 'recent'):
+                    t='active'
+                elif (file == 'analyst' or file == 'russian' or file == 'china'):
+                    t='inactive'
+                else:
+                    t = 'debris'
+                    
+
                 
 
                 result[name] = {
