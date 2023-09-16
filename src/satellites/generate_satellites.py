@@ -4,16 +4,18 @@ from skyfield.api import load, EarthSatellite
 from functools import partial
 
 class Satellite:
+  # TODO: figure out what timescale is for.
   ts = load.timescale()
+
+  @staticmethod
+  def get_timescale():
+    return Satellite.ts
 
   def __init__(self, name, TLE, path):
     self.name = name
     self.type = type
     self.TLE = TLE
     self.path = path
-
-  def get_timescale(self):
-    return ts
 
   def get_pos(self, t):
     return self.path(t)
@@ -24,7 +26,8 @@ final_path = data_path + '/final.json'
 with open(final_path, 'r') as f:
   celestial_data = json.load(f)
 
-ts = Satellite.ts
+# Generate satellite objects from TLE data and store them in a list (for now).
+ts = Satellite.get_timescale()
 satellites = []
 for name, lines in celestial_data.items():
   line1 = lines['line1']
