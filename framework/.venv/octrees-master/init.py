@@ -8,6 +8,7 @@ Scene = None
 class Satellite:
   # TODO: figure out what timescale is for.
   ts = load.timescale()
+  scale = 1
 
   @staticmethod
   def get_timescale():
@@ -24,9 +25,12 @@ class Satellite:
     self.TLE = TLE
     self.satellite = self.generate_satellite()
     
-  #returns [x, y, z]
+  #returns (x, y, z)
   def get_pos(self, t):
-    return self.satellite.at(t).position.km
+    scale = Satellite.scale
+    pos = self.satellite.at(t).position.km / scale
+    pos = (pos[0], pos[1], pos[2])
+    return pos
 
 
 def getScene():
@@ -73,10 +77,9 @@ def main():
   for sat in satellites:
     # print(f'{sat.name} : {sat.get_pos(initialTime)}')
     initialPos = sat.get_pos(initialTime)
-    p = (initialPos[0]/1000, initialPos[1]/1000, initialPos[2]/1000)
     
     try:
-      scene.insert(p,sat)
+      scene.insert(initialPos, sat)
     except:
       continue
 

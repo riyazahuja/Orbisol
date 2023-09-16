@@ -45,7 +45,6 @@ def update_scene():
     
     for prev_pos, satellite in Scene:
         new_pos = satellite.get_pos(now)
-        new_pos = (new_pos[0] / 1000, new_pos[1] / 1000, new_pos[2] / 1000)
         try:
             Scene.remove(prev_pos)
         except:
