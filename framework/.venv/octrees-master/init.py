@@ -61,7 +61,7 @@ def main():
   initialTime = ts.now()
   for sat in satellites:
     initialPos = sat.get_pos(initialTime)
-    p = (initialPos[0], initialPos[1], initialPos[2])
+    p = (initialPos[0]/1000, initialPos[1]/1000, initialPos[2]/1000)
     
     try:
       scene.insert(p,sat)

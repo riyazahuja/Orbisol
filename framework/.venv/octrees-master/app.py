@@ -97,15 +97,15 @@ def check_in_bounds(phi, theta, z):
       
 
 
-        # L = -T  # The camera is at -T, so the line vector is -T
+        L = -T  # The camera is at -T, so the line vector is -T
         # print(type(T))
         
         # # Calculate the projection of the point onto the line
-        # P_proj = -T + np.dot(point_cam, L) / np.dot(L, L) * L
+        P_proj = -T + np.dot(point_cam, L) / np.dot(L, L) * L
 
-        # # Check if the projected point is behind the origin
-        # if np.linalg.norm(P_proj + T) > np.linalg.norm(L):
-        #     return False
+        # Check if the projected point is behind the origin
+        if np.linalg.norm(P_proj + T) > np.linalg.norm(L):
+            return False
         
 
 
