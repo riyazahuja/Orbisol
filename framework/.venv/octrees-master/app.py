@@ -114,11 +114,11 @@ def main():
                 theta += dx * 0.005
                 phi += dy * 0.005
                 x_drag_origin, y_drag_origin = x, y
-            keys = pygame.key.get_pressed()
-            if K_UP in keys:
-                increment_speed()
-            elif K_DOWN in keys:
-                decrement_speed()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    increment_speed()
+                elif event.key == pygame.K_DOWN:
+                    decrement_speed()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glPushMatrix()
         glTranslatef(0.0, 0.0, zoom_factor)  # Apply zoom factor here
