@@ -1,0 +1,20 @@
+# Unwanted Python stuff
+__pycache__
+*.py[cod]
+
+# Emacs working files
+*~
+
+# Vim working files
+*.swp
+
+# C extensions
+*.so
+
+# Unit test / coverage reports
+nosetests.xml
+
+# Package build directories
+build/
+dist/
+octrees.egg-info/
