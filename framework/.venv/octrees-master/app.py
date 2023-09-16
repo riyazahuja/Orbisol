@@ -1,5 +1,8 @@
 
 import pygame
+import math
+import numpy as np
+
 from init import *
 from src import *
 from pygame.locals import *
@@ -7,9 +10,9 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from numpy import *
-import math
 
 zoom_factor=-5
+fov = pi/2
 
 
 from octrees import *
@@ -38,6 +41,34 @@ phi = 0
 # Points list
 #points = [(0, 2, 1), (1, 0, 2), (1, 0, 0), (2, 0, 0), (2, 0, 0)]
 #octree = Octree(((-100, 100), (-100, 100), (-100, 100)))
+
+def check_in_bounds(phi, theta, z):
+    x_c = z * cos(theta) * sin(phi)
+    y_c = z * sin(theta) * sin(phi)
+    z_c = z * cos(phi)
+    c = np.array([[x_c],
+                  [y_c],
+                  [z_c]])
+    def output(point):
+        x, y, z = point
+        point = np.array([[x],
+                          [y],
+                          [z]])
+        v = -c
+        vnorm = linalg.norm(v)
+        vbar = v / vnorm
+        d = matmul(point.T, vbar)
+        if d >= vnorm:
+            return False
+        
+        cos_theta = d / linalg.norm(x)
+        theta = arccos(cos_theta)
+        if abs(theta) >= fov / 2:
+            return False
+        
+        return True
+    
+    return output
 
 def draw_sphere():
     glutSolidSphere(1, 50, 50)
@@ -69,6 +100,7 @@ def point_clicked(x, y):
         winX, winY, winZ = gluProject(point[0], point[1], point[2], modelview, projection, viewport)
         if abs(winX - x) < 5 and abs(winY - y) < 5:
             print(f"Point clicked: {point} | Sat: {sat.name}")
+
 
 def main():
     global theta, phi, dragging, x_drag_origin, y_drag_origin,zoom_factor
@@ -109,15 +141,3 @@ def main():
         pygame.time.wait(10)
 
 main()
-
-
-
-
-
-
-
-
-
-
-
-
