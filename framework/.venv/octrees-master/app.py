@@ -142,8 +142,8 @@ def main():
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glPushMatrix()
         glTranslatef(0.0, 0.0, zoom_factor)  # Apply zoom factor here
-        glRotatef(math.degrees(theta), 0, 1, 0)
-        glRotatef(math.degrees(phi), 1, 0, 0)
+        glRotatef(theta, 0, 1, 0)
+        glRotatef(phi, 1, 0, 0)
         draw_sphere()
         draw_clickable_points(theta,phi,zoom_factor)
         glPopMatrix()
