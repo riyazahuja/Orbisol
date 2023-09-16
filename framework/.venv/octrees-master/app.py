@@ -8,10 +8,17 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from numpy import *
 import math
-import sys
-sys.path.append('../../')
+
+zoom_factor=-5
+
 
 from octrees import *
+
+Scene = getScene()
+
+
+if Scene is None:
+    raise Exception('Scene not initialized')
 
 # Initialize Pygame and OpenGL
 pygame.init()
@@ -56,7 +63,7 @@ def point_clicked(x, y):
         # For demonstration, just print the point if clicked
         print(f"Point clicked: {point} | Sat: {sat.name}")
 def main():
-    global theta, phi, dragging, x_drag_origin, y_drag_origin
+    global theta, phi, dragging, x_drag_origin, y_drag_origin,zoom_factor
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -66,6 +73,12 @@ def main():
                 x_drag_origin, y_drag_origin = event.pos
                 dragging = True
                 point_clicked(*event.pos)  # Check for point clicks
+
+                if event.button == 4:  # Scroll up
+                    zoom_factor += 0.5  # Increase the zoom factor
+                elif event.button == 5:  # Scroll down
+                    zoom_factor -= 0.5  # Decrease the zoom factor
+
             if event.type == pygame.MOUSEBUTTONUP:
                 dragging = False
             if event.type == pygame.MOUSEMOTION and dragging:
@@ -77,6 +90,7 @@ def main():
                 x_drag_origin, y_drag_origin = x, y
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glPushMatrix()
+        glTranslatef(0.0, 0.0, zoom_factor)  # Apply zoom factor here
         glRotatef(math.degrees(theta), 0, 1, 0)
         glRotatef(math.degrees(phi), 1, 0, 0)
         draw_sphere()

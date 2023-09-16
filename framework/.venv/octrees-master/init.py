@@ -1,7 +1,5 @@
 import json
-import sys
-sys.path.append('../../')
-
+import os
 from octrees import *
 from skyfield.api import load, EarthSatellite
 
@@ -25,16 +23,19 @@ class Satellite:
     return self.path(t)
 
 
-
-
+def getScene():
+  return Scene
 
 
 
 def main():
   global Scene
   # Get the json data containing celestial objects orbiting earth in TLE format.
-  data_path = '../datasets'
-  final_path = data_path + '/final.json'
+  
+  
+  current_directory = os.getcwd()
+  print(f"The current working directory is: {current_directory}")
+  final_path = 'src/datasets/final.json'
   with open(final_path, 'r') as f:
     celestial_data = json.load(f)
 
@@ -50,14 +51,14 @@ def main():
     satellite = Satellite(name, TLE, path)
     satellites.append(satellite)
 
-  bounds = ((-1000,1000),(-1000,1000),(-1000,1000))
+  bounds = ((-10000,10000),(-10000,10000),(-10000,10000))
   scene = Octree(bounds)
 
   initialTime = ts.now()
   for sat in satellites:
     initialPos = sat.path(initialTime)
-    scene.insert(initialPos,sat)
-  
+    p = (initialPos[0], initialPos[1], initialPos[2])
+    scene.update(p,sat)
 
   Scene=scene
 
@@ -66,4 +67,6 @@ def main():
 
 
 
+  
 main()
+print(Scene)
