@@ -21,9 +21,10 @@ class Satellite:
     satellite = EarthSatellite(line1, line2, self.name, ts)
     return satellite
 
-  def __init__(self, name, TLE):
+  def __init__(self, name, TLE, t):
     self.name = name
     self.TLE = TLE
+    self.type = t
     self.satellite = self.generate_satellite()
     
   #returns (x, y, z)
@@ -55,8 +56,9 @@ def main():
   for name, lines in celestial_data.items():
     line1 = lines['line1']
     line2 = lines['line2']
+    t = lines['type']
     TLE = (line1, line2)
-    satellite = Satellite(name, TLE)
+    satellite = Satellite(name, TLE,t)
     satellites.append(satellite)
 
 
