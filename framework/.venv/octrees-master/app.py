@@ -32,7 +32,7 @@ gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
 glTranslatef(0.0, 0.0, -5)
 # Additional OpenGL settings
 glEnable(GL_DEPTH_TEST)
-glClearColor(0.5, 0.5, 0.5, 1.0)
+#glClearColor(0.5, 0.5, 0.5, 1.0)
 # Mouse control variables
 dragging = False
 x_drag_origin = 0
@@ -59,7 +59,10 @@ def update_scene():
 
 
 def draw_sphere():
+    glDisable(GL_LIGHTING)
+    glColor3f(0.0, 0.0, 1.0)  # RGB for blue
     glutSolidSphere(1, 50, 50)
+    glEnable(GL_LIGHTING)
 
 
 
@@ -128,7 +131,7 @@ def draw_clickable_points(phi,theta,z):
     #points = octree.subset(f_n)
     glDisable(GL_LIGHTING)
     glColor3f(0, 1, 0)  # Green color
-    glPointSize(10.0)
+    glPointSize(2.0)
     glBegin(GL_POINTS)
 
     for point,sat in Scene:
