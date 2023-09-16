@@ -82,7 +82,6 @@ def check_in_bounds(phi, theta, z):
 def draw_sphere():
     glutSolidSphere(1, 50, 50)
 
-
 def draw_clickable_points(phi,theta,zoom_factor):
     #points = octree.subset(f_n)
     glDisable(GL_LIGHTING)
@@ -94,10 +93,6 @@ def draw_clickable_points(phi,theta,zoom_factor):
         glVertex3fv(point)
     glEnd()
     glEnable(GL_LIGHTING)
-
-
-
-
 
 def point_clicked(x, y):
     modelview = glGetDoublev(GL_MODELVIEW_MATRIX)
