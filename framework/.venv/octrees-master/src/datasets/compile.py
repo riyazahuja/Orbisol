@@ -19,7 +19,7 @@ def generateDict(files):
                 cnts[name] = 0
             if name in cnts.keys() and cnts[name] > 0:
                 name += f'({cnts[name]})'
-            r = random.randint(0,1)
+            r = random.randint(0,2)
             if r == 0:
                 result[name] = {
                     'line1' : lines[i+1],

@@ -18,7 +18,7 @@ import numpy as np
 from octrees import *
 
 zoom_factor=-5
-fov = math.pi/2
+fov = math.pi
 Scene = getScene()
 
 if Scene is None:
@@ -180,8 +180,8 @@ def main():
                 x, y = event.pos
                 dx = x - x_drag_origin
                 dy = y - y_drag_origin
-                theta += dx * 0.005
-                phi += dy * 0.005
+                theta += dx * 0.03#0.005
+                phi += dy * 0.03#0.005
                 x_drag_origin, y_drag_origin = x, y
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glPushMatrix()
