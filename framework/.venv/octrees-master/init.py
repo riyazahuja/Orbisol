@@ -12,15 +12,21 @@ class Satellite:
   @staticmethod
   def get_timescale():
     return Satellite.ts
+  
+  def generate_satellite(self):
+    ts = Satellite.ts
+    line1, line2 = self.TLE
+    satellite = EarthSatellite(line1, line2, self.name, ts)
+    return satellite
 
-  def __init__(self, name, TLE, path):
+  def __init__(self, name, TLE):
     self.name = name
     self.TLE = TLE
-    self.path = path
+    self.satellite = self.generate_satellite()
     
   #returns [x, y, z]
   def get_pos(self, t):
-    return self.path(t)
+    return self.satellite.at(t).position.km
 
 
 def getScene():
@@ -41,26 +47,43 @@ def main():
 
   # Generate satellite objects from TLE data and store them in a list (for now).
   ts = Satellite.get_timescale()
+  # satellites = []
+  # ts = Satellite.get_timescale()
+  # now = ts.now()
   satellites = []
   for name, lines in celestial_data.items():
     line1 = lines['line1']
     line2 = lines['line2']
     TLE = (line1, line2)
-    earth_satellite = EarthSatellite(line1, line2, name, ts)
-    path = lambda t: earth_satellite.at(t).position.km
-    satellite = Satellite(name, TLE, path)
+    satellite = Satellite(name, TLE)
     satellites.append(satellite)
+  # for name, lines in celestial_data.items():
+  #   line1 = lines['line1']
+  #   line2 = lines['line2']
+  #   TLE = (line1, line2)
+  #   earth_satellite = EarthSatellite(line1, line2, name, ts)
+  #   print(earth_satellite.at(now).position.km)
+  #   path = lambda t: earth_satellite.at(t).position.km
+  #   satellite = Satellite(name, TLE, path)
+  #   satellites.append(satellite)
+  print(satellites)
 
-  bounds = ((-10000,10000),(-10000,10000),(-10000,10000))
+  bounds = ((-100,100),(-100,100),(-100,100))
   scene = Octree(bounds)
 
   initialTime = ts.now()
   for sat in satellites:
-    initialPos = sat.path(initialTime)
-    p = (initialPos[0], initialPos[1], initialPos[2])
-    scene.update(p,sat)
+    # print(f'{sat.name} : {sat.get_pos(initialTime)}')
+    initialPos = sat.get_pos(initialTime)
+    p = (initialPos[0]/1000, initialPos[1]/1000, initialPos[2]/1000)
+    
+    try:
+      scene.insert(p,sat)
+    except:
+      continue
 
   Scene=scene
+  
 
 
     
@@ -69,4 +92,5 @@ def main():
 
   
 main()
+
 print(Scene)
