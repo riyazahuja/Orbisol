@@ -1,5 +1,5 @@
 import json
-
+import random
 
 
 
@@ -19,10 +19,12 @@ def generateDict(files):
                 cnts[name] = 0
             if name in cnts.keys() and cnts[name] > 0:
                 name += f'({cnts[name]})'
-            result[name] = {
-                'line1' : lines[i+1],
-                'line2' : lines[i+2]
-            }
+            r = random.randint(0,2)
+            if r == 0:
+                result[name] = {
+                    'line1' : lines[i+1],
+                    'line2' : lines[i+2]
+                }
             i+=3
         
 
@@ -36,7 +38,7 @@ def main():
     files = ['active','analyst','brightest','china','cosmos2251','iridium33','recent','russian','stations']
     output = generateDict(files)
 
-    with open("final.json", "w") as outfile:
+    with open("final_half.json", "w") as outfile:
         outfile.write(json.dumps(output))
 
 
