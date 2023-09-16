@@ -21,7 +21,7 @@ zoom_factor=-5
 fov = math.pi
 Scene = getScene()
 
-NumScenes = 1
+TimeAhead = 0
 
 
 if Scene is None:
@@ -58,11 +58,11 @@ def decrement_speed():
 
 
 def update_scene():
-    global NumScenes
-    NumScenes += 1
+    global TimeAhead
+    TimeAhead += 1 * Satellite.time_scale
     ts = Satellite.get_timescale()
     now = ts.now()
-    t_scaled = now + NumScenes * Satellite.time_scale
+    t_scaled = now + TimeAhead
     
     for prev_pos, satellite in Scene:
         new_pos = satellite.get_pos(t_scaled)

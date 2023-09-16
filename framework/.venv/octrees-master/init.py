@@ -1,5 +1,4 @@
 import json
-import os
 from octrees import *
 from skyfield.api import load, EarthSatellite
 
@@ -10,7 +9,7 @@ class Satellite:
   ts = load.timescale()
   pos_scale = 1000
   time_scale = 0.
-  delta_time_scale = 0.000005
+  delta_time_scale = 1
 
   @staticmethod
   def get_timescale():
