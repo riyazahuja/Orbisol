@@ -1,7 +1,6 @@
 import json
 
 from skyfield.api import load, EarthSatellite
-from functools import partial
 
 class Satellite:
   # TODO: figure out what timescale is for.
@@ -19,7 +18,7 @@ class Satellite:
 
   def get_pos(self, t):
     return self.path(t)
-  
+
 # Get the json data containing celestial objects orbiting earth in TLE format.
 data_path = '../datasets'
 final_path = data_path + '/final.json'
@@ -33,7 +32,7 @@ for name, lines in celestial_data.items():
   line1 = lines['line1']
   line2 = lines['line2']
   TLE = (line1, line2)
-  satellite = EarthSatellite(line1, line2, name, ts)
-  path = partial(satellite.at)
+  earth_satellite = EarthSatellite(line1, line2, name, ts)
+  path = lambda t: earth_satellite.at(t).position.km
   satellite = Satellite(name, TLE, path)
   satellites.append(satellite)
