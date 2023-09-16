@@ -8,7 +8,8 @@ Scene = None
 class Satellite:
   # TODO: figure out what timescale is for.
   ts = load.timescale()
-  scale = 1000
+  pos_scale = 1000
+  time_scale = 5
 
   @staticmethod
   def get_timescale():
@@ -27,8 +28,9 @@ class Satellite:
     
   #returns (x, y, z)
   def get_pos(self, t):
-    scale = Satellite.scale
-    pos = self.satellite.at(t).position.km / scale
+    t *= 5
+    pos_scale = Satellite.pos_scale
+    pos = self.satellite.at(t).position.km / pos_scale
     pos = (pos[0], pos[1], pos[2])
     return pos
 
