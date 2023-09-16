@@ -37,6 +37,13 @@ phi = 0
 #points = [(0, 2, 1), (1, 0, 2), (1, 0, 0), (2, 0, 0), (2, 0, 0)]
 #octree = Octree(((-100, 100), (-100, 100), (-100, 100)))
 
+def update_scene():
+    ts = Satellite.get_timescale()
+    now = ts.time()
+    for _, satellite in Scene:
+        pos = satellite.get_pos(now)
+        Scene.update(pos, satellite)
+
 # Creates a function that checks if a point is in FOV and in front of
 # the Earth or not.
 def check_in_bounds(phi, theta, z):
@@ -142,6 +149,7 @@ def main():
         draw_sphere()
         draw_clickable_points(theta,phi,zoom_factor)
         glPopMatrix()
+        update_scene()
         pygame.display.flip()
         pygame.time.wait(10)
 

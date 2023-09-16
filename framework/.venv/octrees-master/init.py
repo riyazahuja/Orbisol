@@ -28,17 +28,12 @@ class Satellite:
   def get_pos(self, t):
     return self.satellite.at(t).position.km
 
-
 def getScene():
   return Scene
-
-
 
 def main():
   global Scene
   # Get the json data containing celestial objects orbiting earth in TLE format.
-  
-  
 
   final_path = 'src/datasets/final.json'
   with open(final_path, 'r') as f:
