@@ -9,10 +9,16 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from numpy import *
+
+import math
+import numpy as np
+
+
+
 from octrees import *
 
 zoom_factor=-5
-fov = pi/2
+fov = math.pi/2
 Scene = getScene()
 
 if Scene is None:
@@ -37,62 +43,102 @@ phi = 0
 #points = [(0, 2, 1), (1, 0, 2), (1, 0, 0), (2, 0, 0), (2, 0, 0)]
 #octree = Octree(((-100, 100), (-100, 100), (-100, 100)))
 
-# Creates a function that checks if a point is in FOV and in front of
-# the Earth or not.
-def check_in_bounds(phi, theta, z):
-    # Create camera coordinates.
-    x_c = z * cos(theta) * sin(phi)
-    y_c = z * sin(theta) * sin(phi)
-    z_c = z * cos(phi)
-    c = np.array([[x_c],
-                  [y_c],
-                  [z_c]])
-    
-    # Returns True if point in front of Earth and in FOV, False otherwise.
-    def output(point):
-        # Create vector from camera to center of Earth, normalize it,
-        # get distance along camera z-axis to point.
-        x, y, z = point
-        point = np.array([[x],
-                          [y],
-                          [z]])
-        v = -c
-        vnorm = linalg.norm(v)
-        vbar = v / vnorm
-        d = matmul(point.T, vbar)
 
-        # If point is behind center of Earth, don't plot it.
-        if d >= vnorm:
-            return False
-        
-        # Calculate angle between vector from camera to point,
-        # and vector from camera to center of earth.
-        cos_theta = d / linalg.norm(x)
-        theta = arccos(cos_theta)
-
-        # If point outside FOV, don't plot it.
-        if abs(theta) >= fov / 2:
-            return False
-        
-        # We're good to plot the point!
-        return True
+def update_scene():
+    ts = Satellite.get_timescale()
+    now = ts.now()
     
-    return output
+    for prev_pos, satellite in Scene:
+        new_pos = satellite.get_pos(now)
+        new_pos = (new_pos[0] / 1000, new_pos[1] / 1000, new_pos[2] / 1000)
+        try:
+            Scene.remove(prev_pos)
+        except:
+            pass
+        Scene.update(new_pos, satellite)
+
 
 def draw_sphere():
     glutSolidSphere(1, 50, 50)
 
-def draw_clickable_points(phi,theta,zoom_factor):
+
+
+def check_in_bounds(phi, theta, z):
+    global fov
+    # Camera rotation matrix
+    R_phi = np.array([
+        [1, 0, 0],
+        [0, np.cos(phi), -np.sin(phi)],
+        [0, np.sin(phi), np.cos(phi)]
+    ])
+    R_theta = np.array([
+        [np.cos(theta), 0, np.sin(theta)],
+        [0, 1, 0],
+        [-np.sin(theta), 0, np.cos(theta)]
+    ])
+    R = np.dot(R_phi, R_theta)
+    
+    # Translate along negative z-axis by zoom factor
+    T = np.array([0, 0, z])
+    
+    def output(point):
+
+        # Transform to camera coordinates
+        point_cam = np.dot(R, point) + T
+        
+        # Check if point is behind the camera
+        if point_cam[2] > 0:
+            return False
+        
+        # Check if point is within FOV
+        x, y, z = point_cam
+
+        
+      
+
+
+        # L = -T  # The camera is at -T, so the line vector is -T
+        # print(type(T))
+        
+        # # Calculate the projection of the point onto the line
+        # P_proj = -T + np.dot(point_cam, L) / np.dot(L, L) * L
+
+        # # Check if the projected point is behind the origin
+        # if np.linalg.norm(P_proj + T) > np.linalg.norm(L):
+        #     return False
+        
+
+
+
+
+
+        angle_x = np.arctan2(np.abs(x), np.abs(z))
+        angle_y = np.arctan2(np.abs(y), np.abs(z))
+        half_fov = fov / 2.0
+        if angle_x > half_fov or angle_y > half_fov:
+            return False
+        
+        return True
+    
+    return output
+
+
+def draw_clickable_points(phi,theta,z):
+
     #points = octree.subset(f_n)
     glDisable(GL_LIGHTING)
     glColor3f(0, 1, 0)  # Green color
     glPointSize(10.0)
     glBegin(GL_POINTS)
-    checker = check_in_bounds(phi, theta, zoom_factor)
-    for point,sat in Scene.subset(point_fn=checker):
-        glVertex3fv(point)
+
+    for point,sat in Scene:
+        if check_in_bounds(phi,theta,z)(point):
+            glVertex3fv(point)
     glEnd()
     glEnable(GL_LIGHTING)
+
+
+    
 
 def point_clicked(x, y):
     modelview = glGetDoublev(GL_MODELVIEW_MATRIX)
@@ -140,8 +186,11 @@ def main():
         glRotatef(theta, 0, 1, 0)
         glRotatef(phi, 1, 0, 0)
         draw_sphere()
-        draw_clickable_points(theta,phi,zoom_factor)
+
+        draw_clickable_points(phi,theta,zoom_factor)
+
         glPopMatrix()
+        update_scene()
         pygame.display.flip()
         pygame.time.wait(10)
 
