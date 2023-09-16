@@ -10,15 +10,11 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from numpy import *
+from octrees import *
 
 zoom_factor=-5
 fov = pi/2
-
-
-from octrees import *
-
 Scene = getScene()
-
 
 if Scene is None:
     raise Exception('Scene not initialized')
@@ -42,14 +38,21 @@ phi = 0
 #points = [(0, 2, 1), (1, 0, 2), (1, 0, 0), (2, 0, 0), (2, 0, 0)]
 #octree = Octree(((-100, 100), (-100, 100), (-100, 100)))
 
+# Creates a function that checks if a point is in FOV and in front of
+# the Earth or not.
 def check_in_bounds(phi, theta, z):
+    # Create camera coordinates.
     x_c = z * cos(theta) * sin(phi)
     y_c = z * sin(theta) * sin(phi)
     z_c = z * cos(phi)
     c = np.array([[x_c],
                   [y_c],
                   [z_c]])
+    
+    # Returns True if point in front of Earth and in FOV, False otherwise.
     def output(point):
+        # Create vector from camera to center of Earth, normalize it,
+        # get distance along camera z-axis to point.
         x, y, z = point
         point = np.array([[x],
                           [y],
@@ -58,14 +61,21 @@ def check_in_bounds(phi, theta, z):
         vnorm = linalg.norm(v)
         vbar = v / vnorm
         d = matmul(point.T, vbar)
+
+        # If point is behind center of Earth, don't plot it.
         if d >= vnorm:
             return False
         
+        # Calculate angle between vector from camera to point,
+        # and vector from camera to center of earth.
         cos_theta = d / linalg.norm(x)
         theta = arccos(cos_theta)
+
+        # If point outside FOV, don't plot it.
         if abs(theta) >= fov / 2:
             return False
         
+        # We're good to plot the point!
         return True
     
     return output
