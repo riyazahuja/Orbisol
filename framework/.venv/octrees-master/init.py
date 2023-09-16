@@ -8,7 +8,7 @@ Scene = None
 class Satellite:
   # TODO: figure out what timescale is for.
   ts = load.timescale()
-  scale = 1
+  scale = 1000
 
   @staticmethod
   def get_timescale():
