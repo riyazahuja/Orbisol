@@ -24,7 +24,6 @@ final_path = data_path + '/final.json'
 with open(final_path, 'r') as f:
   celestial_data = json.load(f)
 
-# TODO: Create an octree of 
 ts = Satellite.ts
 satellites = []
 for name, lines in celestial_data.items():
