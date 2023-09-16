@@ -14,10 +14,12 @@ with open(final_path, 'r') as f:
 # file, or this file creates a timescale and passes it to our struct thingy.
 ts = load.timescale() # Don't even know what timescale is tbh.
 
-# TODO: Create an octree of paths. (Right now it's all lists)
-satellites = []
+# TODO: Create an octree of 
+paths = []
 for name, lines in celestial_data.items():
-  line1, line2 = lines
+  line1 = lines['line1']
+  line2 = lines['line2']
+  print(name)
   satellite = EarthSatellite(line1, line2, name, ts)
   path = partial(satellite.at)
-  satellites.append(path)
+  paths.append(path)
