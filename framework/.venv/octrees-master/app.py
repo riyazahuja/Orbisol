@@ -39,9 +39,13 @@ phi = 0
 #points = [(0, 2, 1), (1, 0, 2), (1, 0, 0), (2, 0, 0), (2, 0, 0)]
 #octree = Octree(((-100, 100), (-100, 100), (-100, 100)))
 
+def get_time(t):
+    print(t)
+
 def update_scene():
     ts = Satellite.get_timescale()
     now = ts.now()
+    get_time(now)
     
     for prev_pos, satellite in Scene:
         new_pos = satellite.get_pos(now)
