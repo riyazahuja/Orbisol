@@ -1,5 +1,7 @@
-
 import pygame
+import math
+import numpy as np
+
 from init import *
 from src import *
 from pygame.locals import *
@@ -7,18 +9,17 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from numpy import *
+
 import math
 import numpy as np
 
-fov = math.pi/2
-
-zoom_factor=-5
 
 
 from octrees import *
 
+zoom_factor=-5
+fov = math.pi/2
 Scene = getScene()
-
 
 if Scene is None:
     raise Exception('Scene not initialized')
@@ -42,6 +43,7 @@ phi = 0
 #points = [(0, 2, 1), (1, 0, 2), (1, 0, 0), (2, 0, 0), (2, 0, 0)]
 #octree = Octree(((-100, 100), (-100, 100), (-100, 100)))
 
+
 def update_scene():
     ts = Satellite.get_timescale()
     now = ts.now()
@@ -55,8 +57,10 @@ def update_scene():
             pass
         Scene.update(new_pos, satellite)
 
+
 def draw_sphere():
     glutSolidSphere(1, 50, 50)
+
 
 
 def check_in_bounds(phi, theta, z):
@@ -120,11 +124,13 @@ def check_in_bounds(phi, theta, z):
 
 
 def draw_clickable_points(phi,theta,z):
+
     #points = octree.subset(f_n)
     glDisable(GL_LIGHTING)
     glColor3f(0, 1, 0)  # Green color
     glPointSize(10.0)
     glBegin(GL_POINTS)
+
     for point,sat in Scene:
         if check_in_bounds(phi,theta,z)(point):
             glVertex3fv(point)
@@ -133,15 +139,20 @@ def draw_clickable_points(phi,theta,z):
 
 
     
+
 def point_clicked(x, y):
-    for point,sat in Scene:
-        px, py, pz = point
-        # Convert to screen coordinates
-        # ... (conversion logic, if needed)
-        # Check if clicked
-        # ... (check logic)
-        # For demonstration, just print the point if clicked
-        print(f"Point clicked: {point} | Sat: {sat.name}")
+    modelview = glGetDoublev(GL_MODELVIEW_MATRIX)
+    projection = glGetDoublev(GL_PROJECTION_MATRIX)
+    viewport = glGetIntegerv(GL_VIEWPORT)
+    
+    winY = float(viewport[3]) - float(y)
+    
+    for point, sat in Scene:
+        winX, winY, winZ = gluProject(point[0], point[1], point[2], modelview, projection, viewport)
+        if abs(winX - x) < 5 and abs(winY - y) < 5:
+            print(f"Point clicked: {point} | Sat: {sat.name}")
+
+
 def main():
     global theta, phi, dragging, x_drag_origin, y_drag_origin,zoom_factor
     while True:
@@ -155,7 +166,8 @@ def main():
                 point_clicked(*event.pos)  # Check for point clicks
 
                 if event.button == 4:  # Scroll up
-                    zoom_factor += 0.5  # Increase the zoom factor
+                    if zoom_factor <= 0:
+                        zoom_factor += 0.5  # Increase the zoom factor
                 elif event.button == 5:  # Scroll down
                     zoom_factor -= 0.5  # Decrease the zoom factor
 
@@ -171,25 +183,15 @@ def main():
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glPushMatrix()
         glTranslatef(0.0, 0.0, zoom_factor)  # Apply zoom factor here
-        glRotatef(math.degrees(theta), 0, 1, 0)
-        glRotatef(math.degrees(phi), 1, 0, 0)
+        glRotatef(theta, 0, 1, 0)
+        glRotatef(phi, 1, 0, 0)
         draw_sphere()
+
         draw_clickable_points(phi,theta,zoom_factor)
+
         glPopMatrix()
         update_scene()
         pygame.display.flip()
         pygame.time.wait(10)
 
 main()
-
-
-
-
-
-
-
-
-
-
-
-
