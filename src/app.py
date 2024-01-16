@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 from init import *
-from src import *
+from data import *
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *

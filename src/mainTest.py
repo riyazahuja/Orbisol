@@ -3,7 +3,7 @@ import pygame
 import os
 import sys
 import importlib.util
-from src import *
+from data import *
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
