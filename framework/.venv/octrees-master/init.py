@@ -62,7 +62,7 @@ def main():
     satellites.append(satellite)
 
 
-  bounds = ((-100,100),(-100,100),(-100,100))
+  bounds = ((-150,150),(-150,150),(-150,150))
   scene = Octree(bounds)
 
   initialTime = ts.now()

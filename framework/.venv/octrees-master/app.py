@@ -15,7 +15,7 @@ import numpy as np
 
 
 
-from octrees import *
+#from octrees import *
 
 zoom_factor=-5
 fov = math.pi
