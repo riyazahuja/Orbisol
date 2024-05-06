@@ -56,7 +56,8 @@ To run the application, execute:
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
-This project heavily relies on James Cranch's Python Octrees library for efficient rendering: (https://github.com/jcranch/octrees)
+This project relies on James Cranch's Python Octrees library for efficient rendering: (https://github.com/jcranch/octrees)
+
 Thank you to ACM@CMU for hosting CMUHacks 2023, and for selecting Orbisol as the winner!
 
 And special thanks to Jose Cestero, Mihail Alexandrov, and Arturo Paras for helping to make this project a reality.
