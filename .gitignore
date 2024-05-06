@@ -1,6 +1,7 @@
 # Unwanted Python stuff
 __pycache__
 *.py[cod]
+**/.DS_Store
 
 # Emacs working files
 *~
